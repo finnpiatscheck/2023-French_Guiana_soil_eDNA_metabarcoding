@@ -1,4 +1,4 @@
-# QIIME2 Pipelines for eDNA Metabarcoding Analysis
+# Pipelines for eDNA Metabarcoding Analysis
 
 
 
