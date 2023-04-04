@@ -1,4 +1,4 @@
-# QIIME2 Pipeline for 16S Metabarcoding Analysis
+# QIIME2 Pipeline for 16S eDNA Metabarcoding Analysis
 
 ---
 
@@ -30,7 +30,7 @@ conda activate qiime2-2023.2
 
 ---
 
-## STEP1: Importing data, summarize the results, and examining quality of the reads
+## STEP1: Import the data, summarize the results, and examine the quality of the reads
 <br />
 The data type is a FastQ file, which correspond to: 
 ```SampleData[PairedEndSequencesWithQuality]```.
@@ -61,7 +61,7 @@ qiime tools import \
 
 ---
 
-## STEP2: Quality controlling sequences and building Feature Table and Feature Data
+## STEP2: Quality control of the sequences and building Feature Table and Feature Data
 <br />
 Get some statistics about the raw reads. \
 
@@ -79,7 +79,7 @@ See the FIGARO pipeline for more information.
 <br />
 
 
-### Denoising with DADA2:
+### Denoise with DADA2:
 The code below takes quite some computational resource. Several chimera removal methods can be chosen.
 
 ```
@@ -108,7 +108,7 @@ qiime metadata tabulate \
 
 ---
 
-## STEP 3: Summarizing Feature Table and Feature Data
+## STEP 3: Summarize Feature Table and Feature Data
 
 Before running the following commands, the sample-metadata file need to be created. \
 <br />
@@ -173,7 +173,7 @@ qiime feature-classifier classify-sklearn
    --o-classification taxonomy_16S_SKLEARN.qza
 ```
 
-*NOTES: I don't know yet what are the differences between SILVA and Greengenes classifiers yet. It will be important to know and chose what is appropriate for our study. Other reference bases seem to be available too.*
+*NOTES: I don't know yet what are the differences between SILVA and Greengenes classifiers yet. It will be important to know and chose what is appropriate for our study. Other reference bases seem to be available too. EDIT: Greengenes seems to have used deprecated methods. Consider checking EzBioCloud and Ribosomal Database Project.*
 
 <br />
 
@@ -196,7 +196,7 @@ qiime phylogeny align-to-tree-mafft-fasttree \
 
 ---
 
-## STEP6: Analyzing Alpha and Beta diversities
+## STEP6: Analysis of Alpha and Beta diversities
 
 From now one I will prefer doing downstream analyzes in R. But here is the code to generate Alpha and Beta diversity metrics.
 

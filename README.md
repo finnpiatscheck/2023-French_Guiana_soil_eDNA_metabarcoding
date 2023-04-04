@@ -9,11 +9,11 @@ Pipelines can be found in their respective folder.
 
 --- 
 
-Types of samples:
-- Forests
-- Savannas 
-- Pastures 
-- Urban soils
+Soil plots, sequencing data information and physio-chemical data information can be visualized on the following interactive map:
+
+https://finnpiatscheck.shinyapps.io/french_guyana_soil_map/
+
+
 
 
 
