@@ -1,6 +1,7 @@
+
 # QIIME 2 Installation
 
-QUIIME 2 installation tutorials are widespread on the internet, starting with the QUIIME 2 official documentation: 
+QIIME 2 installation tutorials are widespread on the internet, starting with the QUIIME 2 official documentation: 
 https://docs.qiime2.org/2023.2/. 
 Following is the code I used for QIIME 2 version 2023.2 installation.
 

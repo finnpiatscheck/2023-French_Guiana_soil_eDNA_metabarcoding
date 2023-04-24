@@ -24,7 +24,7 @@ python3 setup.py bdist_wheel
 
 ### Decompress.
 ```
- gzip -d *.fastq.gz
+ gzip -dk *.fastq.gz
 ```
 *NOTES: while our files are .gz, they are not compressed so no need to run the command above*
 
@@ -60,4 +60,3 @@ python3 figaro.py \
 The outputs are a log file, two expected/observed error plots (png) and a trimParameter.json file.
 
 The results in trimParameters.json shows a list of "trimPosition" values with an "readRetentionPercent" metric, and a score. The truncation parameters to use are the ones given by the best score, normally at the top of the list. Explore the file with the command ```less```.
-

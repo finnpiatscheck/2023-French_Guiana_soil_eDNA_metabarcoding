@@ -175,6 +175,28 @@ qiime feature-classifier classify-sklearn
 
 *NOTES: I don't know yet what are the differences between SILVA and Greengenes classifiers yet. It will be important to know and chose what is appropriate for our study. Other reference bases seem to be available too. EDIT: Greengenes seems to have used deprecated methods. Consider checking EzBioCloud and Ribosomal Database Project.*
 
+### Now we can vizualize the data.
+```
+qiime metadata tabulate \
+  --m-input-file taxonomy_16S_SKLEARN.qza \
+  --o-visualization taxonomy_16S_SKLEARN.qzv
+```
+```
+qiime metadata tabulate \
+  --m-input-file taxonomy_16S_SKLEARN.qza  \
+  --m-input-file rep-seqs_16S.qza  \
+  --o-visualization annotated_rep-set_16S.qzv
+```
+```
+qiime taxa barplot \
+  --i-table table_16S.qza \
+  --i-taxonomy taxonomy_16S_SKLEARN.qza \
+  --m-metadata-file sample-metadata.tsv \
+  --o-visualization taxa-bar-plots_16S_SKLEARN.qzv
+```
+
+
+
 <br />
 
 ---

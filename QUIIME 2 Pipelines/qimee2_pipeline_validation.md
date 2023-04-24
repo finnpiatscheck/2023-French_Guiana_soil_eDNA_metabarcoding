@@ -98,8 +98,8 @@ qiime cutadapt demux-paired \
 
 ```
 qiime demux summarize \
-  --i-data 16S_subset_100K_demux-paired-end.qza \
-  --o-visualization 16S_subset_100K_mux-paired-end.qzv
+  --i-data 16S_subset_100K_per-sample_sequence.qza \
+  --o-visualization 16S_subset_100K_per-sample_sequence.qzv
 ```
 
 ## Estimate truncation parameters with FIGARO
@@ -131,7 +131,7 @@ In qiime2, we will truncate reads at 288bp for the F reads and 64bp for the R re
 
 ```
   qiime dada2 denoise-paired \
-    --i-demultiplexed-seqs 16S_subset_100K_demux-paired-end.qza \
+    --i-demultiplexed-seqs 16S_subset_100K_per-sample_sequence.qza \
     --p-trim-left-f 28 \
     --p-trim-left-r 25 \
     --p-trunc-len-f 288 \
@@ -142,7 +142,6 @@ In qiime2, we will truncate reads at 288bp for the F reads and 64bp for the R re
     --o-table 16S_subset_100K_table.qza \
     --o-denoising-stats 16S_subset_100K_denoising-stats.qza
 ```
-*NOTES: I used trim left 26 and trim right 23 instead by mistake, but for testing the pipeline, I don't think it matters*
 
 ```
 qiime metadata tabulate \
@@ -150,4 +149,96 @@ qiime metadata tabulate \
   --o-visualization 16S_subset_100K_denoising-stats.qzv
 ```
 
-&#x1F6D1; I have worked the code until here using demultiplexed data sets, but I am bloqued at the cutadapt step with multiplexed data.
+### Summarize
+
+```
+qiime feature-table summarize \
+  --i-table 16S_subset_100K_table.qza \
+  --m-sample-metadata-file amvg26_metadata.tsv\
+  --o-visualization 16S_subset_100K_table.qzv
+```
+
+```
+qiime feature-table tabulate-seqs \
+  --i-data 16S_subset_100K_representative-sequences.qza \
+  --o-visualization 16S_subset_100K_representative-sequences.qzv
+```
+
+
+## Taxonomic assignment
+
+### Download the SILVA classifier
+
+```
+wget \
+-O "silva-138-99-nb-classifier.qza" \
+https://data.qiime2.org/2023.2/common/silva-138-99-nb-classifier.qza
+```
+
+
+### Classification
+```
+qiime feature-classifier classify-sklearn \
+   --i-classifier silva-138-99-nb-classifier.qza \
+   --i-reads 16S_subset_100K_representative-sequences.qza \ 
+   --o-classification 16S_subset_100K_taxonomy_SKLEARN.qza
+```
+
+### Visualization
+```
+qiime metadata tabulate \
+  --m-input-file 16S_subset_100K_taxonomy_SKLEARN.qza \
+  --o-visualization 16S_subset_100K_taxonomy_SKLEARN.qzv
+```
+```
+qiime metadata tabulate \
+  --m-input-file 16S_subset_100K_taxonomy_SKLEARN.qza  \
+  --m-input-file 16S_subset_100K_representative-sequences.qza  \
+  --o-visualization 16S_subset_100K_annotated_rep-set.qzv
+```
+```
+qiime taxa barplot \
+  --i-table 16S_subset_100K_table.qza \
+  --i-taxonomy 16S_subset_100K_taxonomy_SKLEARN.qza \
+  --m-metadata-file amvg26_metadata.tsv \
+  --o-visualization 16S_taxa-bar-plots_SKLEARN.qzv
+```
+
+
+##  Phylogenetic tree
+
+
+```
+qiime phylogeny align-to-tree-mafft-fasttree \
+  --i-sequences 16S_subset_100K_representative-sequences.qza \
+  --o-alignment 16S_subset_100K_aligned-rep-seqs.qza \
+  --o-masked-alignment 16S_subset_100K_masked-aligned-rep-seq.qza \
+  --o-tree 16S_subset_100K_unrooted-tree.qza \
+  --o-rooted-tree 16S_subset_100K_rooted-tree.qza
+```
+<br />
+
+
+&#x1F6D1; 
+
+
+## Analysis of Alpha and Beta diversities
+
+```
+qiime diversity alpha-rarefaction \
+  --i-table 16S_subset_100K_table.qza \
+  --i-phylogeny 16S_subset_100K_rooted-tree.qza \
+  --p-max-depth 8000 \
+  --m-metadata-file amvg26_metadata.tsv \
+  --o-visualization 16S_subset_100K_alpha-rarefaction.qzv
+```
+
+```
+qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny 16S_rooted-tree.qza \
+  --i-table 16S_table.qza \
+  --p-sampling-depth 1000 \
+  --p-n-jobs-or-threads 16 \
+  --m-metadata-file 16S_sample-metadata.tsv \
+  --output-dir 16S_core-metrics-results
+```
