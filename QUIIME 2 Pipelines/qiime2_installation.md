@@ -1,4 +1,3 @@
-
 # QIIME 2 Installation
 
 QIIME 2 installation tutorials are widespread on the internet, starting with the QUIIME 2 official documentation: 
