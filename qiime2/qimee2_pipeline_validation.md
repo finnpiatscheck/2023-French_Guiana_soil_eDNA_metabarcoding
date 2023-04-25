@@ -56,6 +56,14 @@ First we create a manifest.tsv file that will contain the path to the data and t
 echo -e 'sample-id\tforward-absolute-filepath\treverse-absolute-filepath\n16_bacteria\t/home/ECOFOG/finn.piatscheck/work/data/16S_bacteria/subsamples/220819_SN1126_A_L001_AMVG-26_R1_subset_100K.fastq.gz\t/home/ECOFOG/finn.piatscheck/work/data/16S_bacteria/subsamples/220819_SN1126_A_L001_AMVG-26_R2_subset_100K.fastq.gz' > manifest.tsv
 ```
 
+A command to change coma to tabs in the manifest file if it was made as a csv file:
+
+```
+mv manifest.csv manifest.tsv
+sed -i -e 's/,/\t/g' manifest_file.tsv 
+```
+
+### Activate QIIME 2 environment
 
 ```
 conda activate qiime2-2023.2
