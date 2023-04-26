@@ -21,3 +21,6 @@ deactivate
 
 ## Create Conda Environment 
 
+Not necessary I believe but script of this great website, they create an environment for conda environment for obitools and dada 2.
+https://gitlab.mbb.univ-montp2.fr/edna
+
