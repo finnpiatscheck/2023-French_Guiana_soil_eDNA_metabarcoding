@@ -97,7 +97,7 @@ qiime cutadapt demux-paired \
     --m-reverse-barcodes-file amvg26_metadata.tsv \
     --m-reverse-barcodes-column barcode_reverse \
     --o-per-sample-sequences 16S_subset_100K_per-sample_sequence.qza \
-    --o-untrimmed-sequences   16S_subset_100K_untrimmed-sequences.qza  
+    --o-untrimmed-sequences 16S_subset_100K_untrimmed-sequences.qza  
 ```
   
 <br />

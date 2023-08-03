@@ -62,3 +62,16 @@ Next, move the demultiplex data into the ```2_demultiplexing/data/``` folder.
 The ```Setting.xlsx``` file is where parameters for all the following steps are set. It is possible to run all the following steps at once, or run the steps one by one. 
 
 
+## Step 3: Run all steps
+
+```
+apscale --run_apscale
+```
+Initially, I was running into an error at the first step (merging files):
+
+```
+IndexError: list index out of range
+```
+By examining the python script from which the error orginated from ```b_pe_merging.py```, it seemed that the file names format were incorrect (not supported format or too long). I shortened the file names ending with R1.fastq.gz or R2.fastq.gz and it resolved the problem. 
+
+&#x1F6D1; With default parameters and a subset of data, the pipelines works. Ran on the larger previously demultiplexed data sets, the pipeline also works. Cutadapt seems to have issues with some file names of format though.
