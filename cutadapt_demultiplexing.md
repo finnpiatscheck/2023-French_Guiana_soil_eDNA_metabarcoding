@@ -40,7 +40,7 @@ The forward and reverse "barcode" information will be the tag and the primer con
 
 However, as stated aboven, reads are in mixed orientation, which means that R1 reads and their pair can be found in the R2.fastq file and vice versa. For this reason, in a first round of demultiplexing, the reversed reads pairs will be unasigned. So, demultiplexing will occur twice, by concatenating all the unasigned and wrongly assigned reads (reads assigned to unused tag combination) and demultiplex again by simply reversing the R1 and R2 files.
 
-Thus we organize the demultiplexing folder as follow:
+Thus, we organize the demultiplexing folder as follow:
 ```
 ├───round1
 │   ├───assigned
@@ -53,31 +53,31 @@ Thus we organize the demultiplexing folder as follow:
 └───assigned_reads
 
 ```
-The adapter FASTA files are placed in the main folder and the sequence FASTQ files are placed in the ```round1``` folder.
+The adapter FASTA files are placed in the main folder and the sequence FASTQ files are placed in the ```round1``` folder. Adapter file format can be found in the cutadapt documentation. In short, the ID is the tag, and the sequence following is the tag+primer sequence.
 
 ### Parameter settings
 
-To visualize if the reads were sorted correctly by checking the assigned and unassigned reads with the command zless, we add the flag ```--action``` that will allow to retain the adapters. Tags will be removed subsequently but primers will be retained because this is the input formart required by APSCALE to be able to run it in a single command.
+To visualize if the reads were sorted correctly by checking the assigned and unassigned reads with the command ```zless```, we add the flag ```--action retain``` that will allow to retain the adapters.
 
-Because we include the primers and tags, Cutadapt will attempt to align the input adapters to the reads and allow some mismatches due to seuqencing errors. First, we will allow the value of 10% mismatches (which, for example, an adapter length of 28bp represents 2 nucleotides). Thus, we use the flag ```-e 0.10```. Next we will allow an overlap shorter than the length of the adapter. This is because sometimes, reads start after the first nucleotide of the tag. We use the flag ```-O 23``` (3 nucleotides shorter than primer+tag length). The value will change depending on the length of the longest adapter used for the librairie. 
+Because we include the primers and tags, Cutadapt will attempt to align the input adapters to the reads and allow some mismatches due to seuqencing errors. First, we will allow the value of 10% mismatches (which, for example, an adapter length of 26bp (tag+primer) represents 2 nucleotides mismatche). Thus, we use the flag ```-e 0.10```. Next we will allow an overlap shorter than the length of the adapter. This is because sometimes, reads start after the first nucleotide of the tag. We use the flag ```-O 23``` (3 nucleotides shorter than 26bp primer+tag length). The value will change depending on the length of the longest adapter used for the librairie. 
 
 Finally, we run this computation on 12 cores, we add the flag ```-j 12```. This value can be changed as desired.
 
 
 ### Round 1
-
+Raw reads are placed in main folder. The following command should be run from the round 1 folder.
 ```
-cutadapt -g file:AMVG06_cutadapt_barcodes_primers_forward.txt \
-    -G file:AMVG06_cutadapt_barcodes_primers_reverse.txt \
+cutadapt -g file:../AMVG06_cutadapt_barcodes_primers_forward.txt \
+    -G file:../AMVG06_cutadapt_barcodes_primers_reverse.txt \
     -j 12 \
     -e 0.10 \
     -O 23 \
     --action retain \
     -o round1-{name1}-{name2}.R1.fastq.gz \
     -p round1-{name1}-{name2}.R2.fastq.gz \
-    AMVG06_R1.fastq.gz AMVG06_R2.fastq.gz
+    ../AMVG06_R1.fastq.gz ../AMVG06_R2.fastq.gz
 ```
-
+The resulting files are named with the prefix "round1" followed by the tag combinaison. Files with "unknown" had one or both tag unidentified.
 
 
 ### Round 2
