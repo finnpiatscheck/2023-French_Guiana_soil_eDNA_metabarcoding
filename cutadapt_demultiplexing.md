@@ -108,12 +108,16 @@ Then, in the ```unknown_to_concatenate``` folder we concatenate all these file.
 cat *R1* > unknown.R1.fastq.gz
 cat *R2* > unknown.R2.fastq.gz
 ```
+We move the two unknown files to round 2.
+```
+mv unknown.R?.fastq.gz ../../round2
+```
 
 Copy the unused tag into the ```unused_combinaisons``` folder for statistics.
 ```
 ```
 
-In the folder named round2, we move the two unknown files. We rename unknown.R1.fastq.gz into unknown.R2.fastq.gz and unknown.R2.fastq.gz into unknown.R1.fastq.gz.
+In the folder named round2, we rename unknown.R1.fastq.gz into unknown.R2.fastq.gz and unknown.R2.fastq.gz into unknown.R1.fastq.gz.
 
 ```
 mv unknown.R1.fastq.gz unknown.R1.R2.fastq.gz
@@ -143,9 +147,15 @@ mv round2-TAGTCGCA-ACACACAC* ./assigned
 mv round2-TACTATAC-ACACACAC* ./assigned
 ...
 ```
+Move unassigned reads and unused combinaisons to corresponding folders.
 ```
-mv *unknown* ./unassigned 
-mv ./unused_combinaisons
+mv round2*unknown* unassigned
+mv round2* unused_combinaison/
+```
+Then in both round 1 and round 2 assigned folders, we copy (or move for space) all the assigned reads to the corresponding folder.
+```
+cp round2-* ../../assigned_reads/
+cp round1-* ../../assigned_reads/
 ```
 
 ### Rename correctly assigned reads by sample name and concatenate round 1 and round 2
@@ -258,7 +268,4 @@ for file in *.fastq.gz; do
 done 
 ```
 Warnings will appear that some barcodes are within 1 error of each other. In some case, the wrong barcode will be trimmed at the beginning of the read. But in this case, it has no repercution on the analysis. APSCALE will later earch for the primer and remove it and preceeding nuclotides (specifying the argument "anchoring: False").
-
-
-
 
