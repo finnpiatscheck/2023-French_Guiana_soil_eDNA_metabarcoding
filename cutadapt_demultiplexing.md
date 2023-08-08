@@ -1,6 +1,6 @@
 # Demultiplexing with (stand-alone) Cutadapt
 
-The following example is for the librarie AMVG06 (marker 18S Eukaryote for savanas and pastures soils).
+The following example is for the librarie AMVG06 (marker 18S Eukaryote for savanas and pastures soils, project BING).
 
 ### Install Cutadapt
 
@@ -59,9 +59,9 @@ The adapter FASTA files are placed in the main folder and the sequence FASTQ fil
 
 To visualize if the reads were sorted correctly by checking the assigned and unassigned reads with the command zless, we add the flag ```--action``` that will allow to retain the adapters. Tags will be removed subsequently but primers will be retained because this is the input formart required by APSCALE to be able to run it in a single command.
 
-Because we include the primers and tags, Cutadapt will attempt to align the input adapters to the reads and allow some mismatches due to seuqencing errors. First, we will allow the value of 15% mismatches (which, for example, an adapter length of 28bp represents 2-3 nucleotides). Thus, we use the flag ```-e 0.15```. Next we will allow an overlap shorter than the length of the adapter. This is because sometimes, reads start after the first nucleotide of the tag. We use the flag ```-O 20``` (5 nucleotides shorter than primer+tag length). The value will change depending on the length of the adapter. 
+Because we include the primers and tags, Cutadapt will attempt to align the input adapters to the reads and allow some mismatches due to seuqencing errors. First, we will allow the value of 10% mismatches (which, for example, an adapter length of 28bp represents 2 nucleotides). Thus, we use the flag ```-e 0.10```. Next we will allow an overlap shorter than the length of the adapter. This is because sometimes, reads start after the first nucleotide of the tag. We use the flag ```-O 23``` (3 nucleotides shorter than primer+tag length). The value will change depending on the length of the longest adapter used for the librairie. 
 
-Finally, we run this computation on 10 cores, we add the flag ```-j 10```. This value can be changed as desired.
+Finally, we run this computation on 12 cores, we add the flag ```-j 12```. This value can be changed as desired.
 
 
 ### Round 1
@@ -69,8 +69,8 @@ Finally, we run this computation on 10 cores, we add the flag ```-j 10```. This 
 ```
 cutadapt -g file:AMVG06_cutadapt_barcodes_primers_forward.txt \
     -G file:AMVG06_cutadapt_barcodes_primers_reverse.txt \
-    -j 10 \
-    -e 0.15 \
+    -j 12 \
+    -e 0.10 \
     -O 23 \
     --action retain \
     -o round1-{name1}-{name2}.R1.fastq.gz \
@@ -115,6 +115,10 @@ mv unknown.R?.fastq.gz ../../round2
 
 Copy the unused tag into the ```unused_combinaisons``` folder for statistics.
 ```
+cp round1-CGCTCTCG-ACACACAC* ../unused_combinaisons
+cp round1-GTCGTAGA-ACACACAC* ../unused_combinaisons
+...
+
 ```
 
 In the folder named round2, we rename unknown.R1.fastq.gz into unknown.R2.fastq.gz and unknown.R2.fastq.gz into unknown.R1.fastq.gz.
@@ -179,7 +183,7 @@ rename 's/TACTATAC-ACACACAC.R/SAM.1.R/' *.fastq.gz
 ...
 ```
 
-The samples not renamed are used tag combinaisons. They should be moved to the ```unused_combinaisons``` folder. But they should not be any if unused tag combinaisons were separated from these files previously.
+The samples not renamed are used tag combinaisons. But they should not be any if unused tag combinaisons were separated from these files previously.
 
 Next we concatenate round 1 and round 2 files.
 
@@ -235,37 +239,31 @@ zcat round2* | wc -l
 The values are the number of lines in R1 and R2 files. For the actual number of reads, this value needs to be divided by 8.
 
 
-## Demultiplexing DIAMOND and GALBAO data
+### Demultiplexing DIAMOND and GALBAO data
 
-The process is pretty much the same, except that the barcodes aren't named and much more combinaison are being used. In the DIAMOND 16S Bacteria dataset, 40 forward barcode and 36 reverse barcode are being used to identify 1440 samples.  
-After round 1, only associated with 4 reverse barcode are unassigned, as well as the unknown reverse samples.
-
+The process is pretty much the same, except that 40 forward barcode and 36 reverse barcode are being used to identify 1440 tag combinaisons.
 
 
-### Number of files should match the number of samples
-```
-ls | wc -l
-```
+## Trim the tags (optional)
 
-### Trim the barcodes for files to be passed to APSCALE
-
+In the previous demultiplexing with cutadapt, tags and primers were not removed on purpose. This has no repercution when using APSCALE next, even if APSCALE expects reads with trimmed tags but primers still present. APSCALE also uses cutadapt and will search for the primers and trim all previous nucleotides, including the tags when it founds them. 
 ```
 mkdir trim_barcodes
 cp assigned_reads/*.gz trim_barcodes
 cd trim_barcodes
 mkdir trimmed
 ```
-All barcodes and primers should be anchored at the beginning of the reads since they have been already demultiplexed with adapters retained and preceeding nucleotides removed.
+All tags and primers should be anchored at the beginning of the reads since they have been already demultiplexed with adapters retained and the few previous nucleotides were removed.
 ```
 for file in *.fastq.gz; do 
     cutadapt -g ^file:../DIAMOND_barcodes.fasta \
     -j 12 \
-    -e 0.15 \
+    -e 0.10 \
     -O 3 \
     --action trim \
     -o trimmed/$file \
     $file  
 done 
 ```
-Warnings will appear that some barcodes are within 1 error of each other. In some case, the wrong barcode will be trimmed at the beginning of the read. But in this case, it has no repercution on the analysis. APSCALE will later earch for the primer and remove it and preceeding nuclotides (specifying the argument "anchoring: False").
+Warnings will appear that some barcodes are within 1 error of each other. In some case, the wrong tag will be trimmed at the beginning of the read. But in this case, it has no repercution on the analysis because we want all the tags gone.
 
