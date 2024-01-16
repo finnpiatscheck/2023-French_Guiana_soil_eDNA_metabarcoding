@@ -45,11 +45,11 @@ Thus, we organize the demultiplexing folder as follow:
 ├───round1
 │   ├───assigned
 │   ├───unknown_to_concatenate
-│   └───unused_combinaison
+│   └───unused_combinaisons
 ├───round2
 │   ├───assigned
 │   ├───unassigned
-│   └───unused_combinaison
+│   └───unused_combinaisons
 └───assigned_reads
 
 ```
@@ -85,6 +85,17 @@ The resulting files are named with the prefix "round1" followed by the tag combi
 Next we concatenate all the unassigned or wrongly assigned reads. But first we need to move all assigned reads in a folder 
 ```assigned``` and unassigned (unknown for now) in another folder ```unknown_to_concatenate```. All files with "unknown" or with adapter combinations unused (for example if f24 was not used, reads assigned to this tag should be reconsidered). 
 
+#### Move the unused tag combinaisons (due to tag jumping) into the ```unused_combinaisons``` folder.
+```
+mv round1-TACTATAC-GTCACGTC* unused_combinaisons
+mv round1-GTGTACAT-GACTGATG* unused_combinaisons
+mv round1-TACTATAC-GTACGACT* unused_combinaisons
+mv round1-ACTAGATC-ACGACGAG* unused_combinaisons
+mv round1-GATCGCGA-ACGACGAG* unused_combinaisons
+mv round1-TACTATAC-CTGCGTAC* unused_combinaisons
+...
+
+```
 
 #### Move assigned reads from rounds 1
 ```
@@ -97,9 +108,9 @@ mv round1-TACTATAC-ACACACAC* ./assigned
 ...
 ```
 
-#### Move all the other files into the unknown folder
+#### Move all the other files into the unknown folder (only flles with "unkown" should remain)
 ```
-mv *.gz ./unknown_to_concatenate 
+mv *unknown*.gz ./unknown_to_concatenate 
 ```
 
 Then, in the ```unknown_to_concatenate``` folder we concatenate all these file.
@@ -113,13 +124,7 @@ We move the two unknown files to round 2.
 mv unknown.R?.fastq.gz ../../round2
 ```
 
-Copy the unused tag into the ```unused_combinaisons``` folder for statistics.
-```
-cp round1-CGCTCTCG-ACACACAC* ../unused_combinaisons
-cp round1-GTCGTAGA-ACACACAC* ../unused_combinaisons
-...
 
-```
 
 In the folder named round2, we rename unknown.R1.fastq.gz into unknown.R2.fastq.gz and unknown.R2.fastq.gz into unknown.R1.fastq.gz.
 
@@ -135,13 +140,14 @@ Then we run Cutadapt again for round 2:
 cutadapt -g file:../AMVG06_cutadapt_barcodes_primers_forward.txt \
     -G file:../AMVG06_cutadapt_barcodes_primers_reverse.txt \
     -j 12 \
-    -e 0.15 \
+    -e 0.10 \
     -O 23 \
     --action retain \
     -o round2-{name1}-{name2}.R1.fastq.gz \
     -p round2-{name1}-{name2}.R2.fastq.gz \
     unknown.R1.fastq.gz unknown.R2.fastq.gz
 ```
+Once done, we move assigned reads to their corresponding folder.
 ```
 mv round2-ACACACAC-ACACACAC* ./assigned
 mv round2-ACAGCACA-ACACACAC* ./assigned
@@ -151,15 +157,15 @@ mv round2-TAGTCGCA-ACACACAC* ./assigned
 mv round2-TACTATAC-ACACACAC* ./assigned
 ...
 ```
-Move unassigned reads and unused combinaisons to corresponding folders.
+Move unassigned reads and unused combinaisons to their corresponding folders.
 ```
 mv round2*unknown* unassigned
 mv round2* unused_combinaison/
 ```
-Then in both round 1 and round 2 assigned folders, we copy (or move for space) all the assigned reads to the corresponding folder.
+Then in both round 1 and round 2 assigned folders and unused_combinaisons, we copy (or move for space) all the assigned reads to the corresponding folder. The unused_combinaisons should be assigned to a g
 ```
-cp round2-* ../../assigned_reads/
-cp round1-* ../../assigned_reads/
+mv round2-* ../../assigned_reads/
+mv round1-* ../../assigned_reads/
 ```
 
 ### Rename correctly assigned reads by sample name and concatenate round 1 and round 2

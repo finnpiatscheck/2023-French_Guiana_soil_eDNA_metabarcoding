@@ -10,10 +10,10 @@ Following is the code I used for QIIME 2 version 2023.2 installation.
 ### First, Download and install Miniconda.
 
 ```
-wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 ```
 ```
-bash Miniconda3-py310_23.1.0-1-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
 ```
 ### Update Miniconda.
 ```
